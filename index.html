@@ -9,157 +9,324 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-/* تصفير الإعدادات الافتراضية */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 html, body {
-    animation: fadeIn .9s ease;
+  width: 100%;
+  overflow-x: hidden; /* يمنع ظهور شريط التمرير الأفقي تماماً */
+}
+
+body {
+  animation: fadeIn .9s ease;
+  font-family: 'Cairo', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 15px;
+  background: #020712;
+  position: relative;
+  color: white;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* إعدادات الجسم الأساسية ومنع التمدد الأفقي */
-body {
-    font-family: 'Cairo', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 25px 15px;
-    background: #020712;
-    position: relative;
-    color: white;
-    overflow-x: hidden;
-}
-
-/* الخلفية المضيئة */
+/* الخلفية */
 body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at center, #0f172a 0%, #020712 70%);
-    z-index: -1;
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, #0f5eff55, transparent 30%),
+    radial-gradient(circle at bottom left, #00a2ff33, transparent 30%),
+    linear-gradient(to bottom, #020712, #07172f, #0f4bcc);
+  z-index: -3;
 }
 
-/* الحاوية الرئيسية للتوسيط */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 600px;
-    gap: 30px;
-    z-index: 1;
+/* خطوط HUD */
+.grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 38px 38px;
+  opacity: .35;
+  z-index: -2;
 }
 
-/* تعديل الشعار ليكون متجاوباً بدلاً من حجم ثابت */
-.logo {
-    width: 100%;
-    max-width: 220px; /* أقصى عرض للشعار */
-    height: auto;     /* الحفاظ على نسبة الطول والعرض */
-}
-
-/* حاوية العداد الدائرية */
-.rpm-wrap {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* التعديل الجوهري: استخدام عرض مرن مع حد أقصى */
-    width: 85vw;
-    max-width: 320px; 
-    aspect-ratio: 1 / 1; /* إجبار الحاوية على شكل مربع لضمان الدوران المثالي */
-    border-radius: 50%;
-    background: rgba(2, 7, 18, 0.8);
-    border: 2px solid rgba(0, 255, 255, 0.4);
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
-}
-
-/* تأثير النيون الداخلي والخارجي - الآن يتجاوب مع الحاوية */
-.glow, .glow2 {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: -1;
-}
-
+/* إضاءة نيون */
 .glow {
-    width: 140%; /* أكبر من الحاوية الأصلية بنسبة مئوية بدلا من 450px */
-    height: 140%;
-    background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 65%);
+  position: fixed;
+  width: 450px;
+  height: 450px;
+  background: #1565ff12;
+  border-radius: 50%;
+  filter: blur(120px);
+  top: -150px;
+  right: -100px;
+  z-index: -1;
+  animation: floatGlow 7s ease-in-out infinite;
+  pointer-events: none; /* يمنع تأثير الإضاءة على النقرات */
 }
 
+@keyframes floatGlow {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(20px); }
+  100% { transform: translateY(0px); }
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 430px;
+  z-index: 10;
+}
+
+.panel {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(91,169,255,.18);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 30px;
+  padding: 32px 22px;
+  box-shadow:
+    0 0 18px rgba(15,94,255,.12),
+    0 18px 45px rgba(0,0,0,.45);
+}
+
+/* عداد التيربو */
+.rpm-wrap {
+  position: relative;
+  width: 100%; /* استخدام عرض مرن */
+  max-width: 300px;
+  aspect-ratio: 1 / 1; /* يحافظ على الشكل الدائري بغض النظر عن الشاشة */
+  margin: auto;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.logo {
+  position: relative;
+  filter: drop-shadow(0 0 30px rgba(91,169,255,.45));
+  z-index: 5;
+  width: 80%; /* نسبة مئوية مرنة لتتجاوب مع الحاوية الأم */
+  height: 80%;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 2px solid rgba(255,255,255,.1);
+  box-shadow: 0 0 18px rgba(91,169,255,.35);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+.title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  color: #f5f9ff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #b7d6ff;
+  margin-bottom: 32px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  font-size: 16px;
+  font-weight: 700;
+  overflow: hidden;
+  transition: .35s;
+  box-shadow: 0 0 18px rgba(15,94,255,.18);
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  transform: translateX(-120%);
+  transition: .7s;
+}
+
+.btn:hover::before {
+  transform: translateX(120%);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 14px rgba(91,169,255,.18);
+}
+
+.btn i {
+  position: absolute;
+  right: 18px;
+  font-size: 20px;
+  color: #8cc7ff;
+}
+
+.footer {
+  margin-top: 34px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,.35);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 2px;
+}
+
+/* إضاءة إضافية */
 .glow2 {
-    width: 110%;
-    height: 110%;
-    background: radial-gradient(circle, rgba(0, 255, 255, 0.2) 0%, transparent 60%);
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  background: #5ba9ff10;
+  border-radius: 50%;
+  filter: blur(100px);
+  bottom: -100px;
+  left: -80px;
+  z-index: -1;
+  animation: floatGlow 9s ease-in-out infinite;
+  pointer-events: none;
 }
 
-/* إعدادات النصوص */
-.title-en {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(1.2rem, 5vw, 2.2rem); /* خط يتمدد وينكمش حسب الشاشة */
-    text-align: center;
-    color: #00ffff;
-    letter-spacing: 2px;
-    text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+/* نبض الشعار */
+@keyframes logoPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
 }
 
-.rpm-number {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    font-weight: 800;
-    color: white;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+/* خط نيون تحت العنوان */
+.title::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5ba9ff, #ffffff, #5ba9ff);
+  box-shadow: 0 0 12px #5ba9ff;
 }
 
-.rpm-text {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: -10px;
+/* ---------------------------------
+   التجاوب مع شاشات الهواتف المحمولة
+------------------------------------ */
+@media(max-width: 480px) {
+  .panel {
+    padding: 28px 18px;
+    border-radius: 24px;
+  }
+
+  .rpm-wrap {
+    width: 65vw; /* استخدام المقاسات النسبية بناءً على عرض الشاشة */
+    max-width: 260px;
+  }
+
+  /* ملاحظة: الشعار .logo سيتجاوب تلقائياً لأنه يأخذ 80% من مساحة .rpm-wrap */
+
+  .title {
+    font-size: 24px;
+  }
+
+  .btn {
+    padding: 16px;
+    font-size: 15px;
+  }
+
+  /* تقليص حجم الإضاءة للهواتف لتفادي المشاكل الجانبية */
+  .glow {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -80px;
+  }
+
+  .glow2 {
+    width: 200px;
+    height: 200px;
+    bottom: -50px;
+    left: -50px;
+  }
 }
 
-/* تعديلات خاصة للشاشات الصغيرة جداً إن لزم الأمر */
-@media (max-width: 480px) {
-    .container {
-        gap: 20px;
-    }
-    .logo {
-        max-width: 180px;
-    }
-}
 </style>
 </head>
+
 <body>
 
-<div class="container">
-    
-    <h1 class="title-en" style="color: white; text-shadow: none; font-size: 2.5rem;">Turbo<span style="color:#00ffff;">Egypt</span></h1>
+<div class="grid"></div>
+<div class="glow"></div>
+<div class="glow2"></div>
+
+<div class="dashboard">
+  <div class="panel">
 
     <div class="rpm-wrap">
-        <div class="glow"></div>
-        <div class="glow2"></div>
-        
-        <div style="text-align: center; z-index: 2;">
-            <div class="rpm-number">8500</div>
-            <div class="rpm-text">RPM</div>
-        </div>
+      <img src="https://via.placeholder.com/240x240/0f4bcc/ffffff?text=TurboEgypt" alt="TurboEgypt" class="logo">
     </div>
 
-    <h2 class="title-en" style="font-size: clamp(1rem, 4vw, 1.5rem); margin-top: 10px;">ACCELERATE THE LEGACY</h2>
+    <div class="title">TurboEgypt</div>
+    <div class="subtitle">ACCELERATE THE LEGACY</div>
+
+    <div class="links">
+      <a href="#" class="btn">
+        <span>موقعنا الإلكتروني</span>
+        <i class="fa-solid fa-globe"></i>
+      </a>
+      <a href="#" class="btn">
+        <span>تواصل معنا</span>
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+      <a href="#" class="btn">
+        <span>إنستجرام</span>
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+    </div>
+
+    <div class="footer">
+      © 2026 TURBO EGYPT. ALL RIGHTS RESERVED.
+    </div>
+
+  </div>
 </div>
 
 </body>
