@@ -220,7 +220,7 @@ font-size:16px;
 font-weight:700;
 text-align:center;
 line-height:1.5;
-white-space:normal;
+white-space:nowrap;
 overflow:hidden;
 transition:.35s;
 box-shadow:0 0 18px rgba(15,94,255,.18);
@@ -326,6 +326,43 @@ background:linear-gradient(90deg,#5ba9ff,#ffffff,#5ba9ff);
 box-shadow:0 0 12px #5ba9ff;
 }
 
+
+.social-icons{
+display:flex;
+justify-content:center;
+gap:15px;
+margin:10px 0 20px;
+}
+.social-icons a{
+width:50px;
+height:50px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+border:1px solid rgba(255,255,255,.15);
+color:white;
+font-size:24px;
+text-decoration:none;
+box-shadow:0 0 18px rgba(15,94,255,.18);
+transition:.3s;
+}
+.social-icons a:hover{
+transform:translateY(-3px);
+}
+
+
+html,body{
+max-width:100%;
+overflow-x:hidden !important;
+}
+.dashboard{
+width:100%;
+max-width:430px;
+margin:0 auto;
+}
+
 </style>
 </head>
 
@@ -351,6 +388,11 @@ box-shadow:0 0 12px #5ba9ff;
 
 </div>
 
+<div class="social-icons">
+<a href="https://www.facebook.com/profile.php?id=61590088903145" target="_blank"><i class="fab fa-facebook-f"></i></a>
+<a href="https://wa.me/201150494609" target="_blank"><i class="fab fa-whatsapp"></i></a>
+</div>
+
 <h1 class="title">TurboEgypt</h1>
 
 <p class="subtitle">ACCELERATE THE LEGACY</p>
@@ -371,17 +413,11 @@ box-shadow:0 0 12px #5ba9ff;
 
 
 
-<a href="https://wa.me/201150494609" class="btn" target="_blank">
-<i class="fab fa-whatsapp"></i>
-واتساب
-</a>
 
 
 
-<a href="https://www.facebook.com/profile.php?id=61590088903145" class="btn" target="_blank">
-<i class="fab fa-facebook-f"></i>
-فيسبوك
-</a>
+
+
 
 </div>
 
